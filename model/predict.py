@@ -1,9 +1,16 @@
+# 🔥 KERAS COMPATIBILITY FIX (VERY IMPORTANT)
+import os
+os.environ["TF_USE_LEGACY_KERAS"] = "1"
+
 import tensorflow as tf
 import numpy as np
 from PIL import Image
 
-# Load trained model
-model = tf.keras.models.load_model("model/deepfake_model.h5")
+# Load trained model safely (for old .h5 models)
+model = tf.keras.models.load_model(
+    "model/deepfake_model.h5",
+    compile=False
+)
 
 IMG_SIZE = 224
 
@@ -29,5 +36,4 @@ def predict_image(img_path):
     else:
         label = "REAL"
 
-    # ⭐ IMPORTANT → return TWO VALUES
     return label, confidence
