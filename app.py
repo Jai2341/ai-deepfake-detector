@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 import os
-from model.predict import predict_image
+from detector.predict import predict_image
 from video_detect import predict_video
 
 app = Flask(__name__)
