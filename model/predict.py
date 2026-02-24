@@ -1,34 +1,19 @@
-import os
-os.environ["TF_USE_LEGACY_KERAS"] = "1"
-
 import tensorflow as tf
 import numpy as np
-from PIL import Image
+from tensorflow.keras.preprocessing import image
 
-IMG_SIZE = 224
-
-# ⭐ load model safely (old keras compatibility)
-model = tf.keras.models.load_model(
-    "model/deepfake_model.h5",
-    compile=False
-)
-
-def preprocess(img_path):
-    img = Image.open(img_path).convert("RGB")
-    img = img.resize((IMG_SIZE, IMG_SIZE))
-    img = np.array(img) / 255.0
-    img = np.expand_dims(img, axis=0)
-    return img
+# ✅ load NEW keras model (important!)
+model = tf.keras.models.load_model("model/deepfake_model.keras")
 
 def predict_image(img_path):
-    img = preprocess(img_path)
-    prediction = model.predict(img)[0][0]
+    img = image.load_img(img_path, target_size=(224,224))
+    img = image.img_to_array(img)
+    img = np.expand_dims(img, axis=0) / 255.0
 
+    prediction = model.predict(img)[0][0]
     confidence = round(float(prediction) * 100, 2)
 
     if prediction > 0.5:
-        label = "FAKE"
+        return "FAKE", confidence
     else:
-        label = "REAL"
-
-    return label, confidence
+        return "REAL", 100 - confidence
